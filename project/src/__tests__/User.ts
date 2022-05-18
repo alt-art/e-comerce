@@ -42,7 +42,16 @@ describe('User', () => {
       });
       expect(response.status).toBe(201);
     });
-
+    it('should return 400 if email is missing', async () => {
+      const response = await request(app).post('/user').send({
+        name: 'John Doe',
+        password: 'best password ever',
+      });
+      expect(response.body).toEqual({
+        error: 'email is a required field',
+      });
+      expect(response.status).toBe(400);
+    });
     it('should return 400 if password is missing', async () => {
       const response = await request(app).post('/user').send({
         name: 'John Doe',
@@ -53,7 +62,6 @@ describe('User', () => {
       });
       expect(response.status).toBe(400);
     });
-
     it('should return 400 if the password is too weak', async () => {
       const response = await request(app).post('/user').send({
         name: 'John Doe',
