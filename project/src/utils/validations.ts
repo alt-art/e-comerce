@@ -3,7 +3,7 @@ import zxcvbn from 'zxcvbn';
 
 export const schemaUserSingUp = yup.object().shape({
   email: yup.string().email().required(),
-  username: yup.string().min(3).required(),
+  name: yup.string().min(3).required(),
   password: yup
     .string()
     .max(150)

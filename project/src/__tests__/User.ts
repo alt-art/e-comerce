@@ -71,7 +71,7 @@ describe('User', () => {
         name: 'John Doe',
         email: 'johndoe@test.com',
       };
-      prismaMock.user.findOne.mockResolvedValue(user);
+      prismaMock.user.findUnique.mockResolvedValue(user);
       const response = await request(app).post('/user').send({
         name: user.name,
         email: user.email,

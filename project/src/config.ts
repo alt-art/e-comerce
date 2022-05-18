@@ -1,5 +1,5 @@
 import crypto from 'crypto';
 
 export default {
-  appSecret: crypto.randomBytes(64).toString('hex'),
+  appSecret: crypto.randomBytes(64),
 };

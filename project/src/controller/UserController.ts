@@ -2,12 +2,13 @@ import { RequestHandler } from 'express';
 
 import * as UserService from '../service/UserService';
 
-export const createUser: RequestHandler = (req, res) => {
+export const createUser: RequestHandler = async (req, res) => {
   const { name, email, password } = req.body;
   try {
-    UserService.createUser(name, email, password);
+    const user = await UserService.createUser(name, email, password);
+    res.status(201).json(user);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 
