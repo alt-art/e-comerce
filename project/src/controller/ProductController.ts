@@ -66,3 +66,14 @@ export const updateProduct: RequestHandler = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+export const deleteProduct: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { user } = res.locals;
+  try {
+    await ProductService.deleteProduct(id, user);
+    res.status(200).end();
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};

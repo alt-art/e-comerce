@@ -211,14 +211,10 @@ describe('Product', () => {
       const response = await request(app)
         .delete('/product/1')
         .set('Authorization', token);
-      expect(response.body).toEqual({
-        id: '1',
-        name: 'Product 1',
-        price: 10,
-        description: 'Product 1 description',
-        image: 'product1.png',
-        createdAt: '2020-01-01T00:00:00.000Z',
-        updatedAt: '2020-01-01T00:00:00.000Z',
+      expect(prismaMock.product.delete).toHaveBeenCalledWith({
+        where: {
+          id: '1',
+        },
       });
       expect(response.status).toBe(200);
     });

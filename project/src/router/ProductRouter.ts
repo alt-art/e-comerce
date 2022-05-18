@@ -17,5 +17,10 @@ router.put(
   UserMiddleware.authenticateUser,
   ProductController.updateProduct,
 );
+router.delete(
+  '/:id',
+  UserMiddleware.authenticateUser,
+  ProductController.deleteProduct,
+);
 
 export default router;

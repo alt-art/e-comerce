@@ -48,3 +48,15 @@ export const updateProduct = async (id, data, user: User) => {
   });
   return product;
 };
+
+export const deleteProduct = async (id, user: User) => {
+  if (user.role !== 'ADMIN') {
+    throw new Error('You are not authorized to perform this action');
+  }
+  const product = await prisma.product.delete({
+    where: {
+      id,
+    },
+  });
+  return product;
+};
