@@ -20,3 +20,25 @@ export const getProductById: RequestHandler = async (req, res) => {
     res.status(404).json({ error: error.message });
   }
 };
+
+export const createProduct: RequestHandler = async (req, res) => {
+  const { user } = res.locals;
+  const {
+    name, price, description, image, category,
+  } = req.body;
+  try {
+    const product = await ProductService.createProduct(
+      {
+        name,
+        price,
+        category,
+        description,
+        image,
+      },
+      user,
+    );
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
