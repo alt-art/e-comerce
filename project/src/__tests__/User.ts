@@ -96,7 +96,7 @@ describe('User', () => {
     it('should return a object with the user and a token with the email and password on requisition', async () => {
       const user = {
         id: 'dummy-id',
-        username: 'john',
+        name: 'john',
         email: 'johndoe@test.com',
         secret: 'dummy-secret',
         password: await encrypt('best password ever'),
@@ -109,19 +109,19 @@ describe('User', () => {
       });
       expect(response.body).toEqual({
         id: user.id,
-        username: user.username,
+        name: user.name,
         email: user.email,
         token: 'dummy-token',
       });
     });
-    it('should return 400 if the email or password is incorrect', async () => {
+    it('should return 400 if the email is incorrect', async () => {
       prismaMock.user.findUnique.mockResolvedValue(null);
       const response = await request(app).post('/user/login').send({
-        email: 'john',
+        email: 'john@test.com',
         password: 'best password ever',
       });
       expect(response.body).toEqual({
-        error: 'email is incorrect',
+        error: 'User not found',
       });
       expect(response.status).toBe(400);
     });
@@ -130,7 +130,7 @@ describe('User', () => {
         password: 'best password ever',
       });
       expect(response.body).toEqual({
-        error: 'email is required',
+        error: 'email is a required field',
       });
       expect(response.status).toBe(400);
     });
@@ -157,7 +157,7 @@ describe('User', () => {
         password: 'wrong password',
       });
       expect(response.body).toEqual({
-        error: 'password is incorrect',
+        error: 'Invalid password',
       });
       expect(response.status).toBe(400);
     });
