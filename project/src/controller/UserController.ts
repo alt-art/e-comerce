@@ -28,6 +28,6 @@ export const deleteUser: RequestHandler = async (req, res) => {
     await UserService.deleteUser(user.id);
     res.status(200).end();
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
