@@ -22,10 +22,11 @@ export const loginUser: RequestHandler = async (req, res) => {
   }
 };
 
-export const deleteUser: RequestHandler = (req, res) => {
+export const deleteUser: RequestHandler = async (req, res) => {
   const { user } = res.locals;
   try {
-    UserService.deleteUser(user.id);
+    await UserService.deleteUser(user.id);
+    res.status(200).end();
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

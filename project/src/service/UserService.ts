@@ -62,5 +62,17 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const deleteUser = (id: string) => {
-  throw new Error('not implemented yet');
+  const userExists = prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (!userExists) {
+    throw new Error('User not found');
+  }
+  return prisma.user.delete({
+    where: {
+      id,
+    },
+  });
 };

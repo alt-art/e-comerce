@@ -1,8 +1,7 @@
-import jose from 'jose';
 import { RequestHandler } from 'express';
 import { schemaUserLogin, schemaUserSingUp } from '../utils/validations';
-import config from '../config';
 import prisma from '../prisma';
+import { verifyToken } from '../utils/encryption';
 
 export const createUser: RequestHandler = async (req, res, next) => {
   try {
@@ -25,11 +24,10 @@ export const loginUser: RequestHandler = async (req, res, next) => {
 export const authenticateUser: RequestHandler = async (req, res, next) => {
   const { authorization } = req.headers;
   try {
-    const { payload } = await jose.jwtVerify(authorization, config.appSecret);
-    const { userId } = payload;
+    const { userId } = await verifyToken(authorization);
     const user = await prisma.user.findUnique({
       where: {
-        id: userId as string,
+        id: userId,
       },
     });
     if (!user) {
@@ -38,6 +36,6 @@ export const authenticateUser: RequestHandler = async (req, res, next) => {
     res.locals.user = user;
     next();
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(401).json({ error: error.message });
   }
 };
