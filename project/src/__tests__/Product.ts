@@ -138,8 +138,9 @@ describe('Product', () => {
         .send({
           name: 'Product 1',
           price: 10,
+          category: 'Product 1 category',
           description: 'Product 1 description',
-          image: 'product1.png',
+          image: 'https://test.com/1.png',
         });
       expect(response.body).toEqual(product);
       expect(response.status).toBe(201);
@@ -161,8 +162,9 @@ describe('Product', () => {
         .send({
           name: 'Product 1',
           price: 10,
+          category: 'Product 1 category',
           description: 'Product 1 description',
-          image: 'product1.png',
+          image: 'https://test.com/1.png',
         });
       expect(response.body).toEqual({
         error: 'You are not authorized to perform this action',
@@ -181,6 +183,7 @@ describe('Product', () => {
         createdAt: '2020-01-01T00:00:00.000Z',
         updatedAt: '2020-01-01T00:00:00.000Z',
       };
+      prismaMock.product.findUnique.mockResolvedValue(product);
       prismaMock.product.update.mockResolvedValue(product);
       const token = await new jose.SignJWT({ userId: 'dummy_id' })
         .setProtectedHeader({ alg: 'HS256' })
@@ -197,8 +200,9 @@ describe('Product', () => {
         .send({
           name: 'Product 1',
           price: 10,
+          category: 'Product 1 category',
           description: 'Product 1 description',
-          image: 'product1.png',
+          image: 'https://test.com/1.png',
         });
       expect(response.body).toEqual(product);
       expect(response.status).toBe(200);
@@ -220,12 +224,39 @@ describe('Product', () => {
         .send({
           name: 'Product 1',
           price: 10,
+          category: 'Product 1 category',
           description: 'Product 1 description',
-          image: 'product1.png',
+          image: 'https://test.com/1.png',
         });
       expect(response.body).toEqual({
         error: 'You are not authorized to perform this action',
       });
+    });
+    it('should return 404 if the product is not found', async () => {
+      prismaMock.product.findUnique.mockResolvedValue(null);
+      const token = await new jose.SignJWT({ userId: 'dummy_id' })
+        .setProtectedHeader({ alg: 'HS256' })
+        .sign(config.appSecret);
+      prismaMock.user.findUnique.mockResolvedValue({
+        id: 'dummy_id',
+        name: 'dummy_name',
+        role: 'ADMIN',
+        email: 'dummy_email',
+      });
+      const response = await request(app)
+        .put('/product/1')
+        .set('Authorization', token)
+        .send({
+          name: 'Product 1',
+          price: 10,
+          category: 'Product 1 category',
+          description: 'Product 1 description',
+          image: 'https://test.com/1.png',
+        });
+      expect(response.body).toEqual({
+        error: 'Product not found',
+      });
+      expect(response.status).toBe(400);
     });
   });
   describe('DELETE /product/:id', () => {
