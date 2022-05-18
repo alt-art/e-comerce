@@ -19,6 +19,51 @@ app.use(express.json());
 app.use(router);
 
 describe('User', () => {
+  describe('DELETE /user', () => {
+    it('should delete a user', async () => {
+      const user = {
+        id: 'dummy-id',
+        name: 'john',
+        email: 'johndoe@test.com',
+      };
+      prismaMock.user.delete.mockResolvedValue(user);
+      prismaMock.user.findUnique.mockResolvedValue(user);
+      const token = await new jose.SignJWT({ userId: user.id })
+        .setProtectedHeader({ alg: 'HS256' })
+        .sign(config.appSecret);
+      const response = await request(app)
+        .delete('/user')
+        .set('Authorization', token);
+      expect(prismaMock.user.delete).toHaveBeenCalledWith({
+        where: { id: user.id },
+      });
+      expect(response.status).toBe(200);
+    });
+    it('should return 401 if the user is not authenticated', async () => {
+      const response = await request(app).delete('/user');
+      expect(response.body).toEqual({
+        error: 'Invalid token',
+      });
+      expect(response.status).toBe(401);
+    });
+    it('should return 400 if the user is not found', async () => {
+      prismaMock.user.findUnique.mockResolvedValue(null);
+      const token = await new jose.SignJWT({ userId: 'dummy-id' })
+        .setProtectedHeader({ alg: 'HS256' })
+        .sign(config.appSecret);
+      const response = await request(app)
+        .delete('/user')
+        .set('Authorization', token);
+      expect(response.body).toEqual({
+        error: 'User not found',
+      });
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+        where: { id: 'dummy-id' },
+      });
+      expect(response.status).toBe(401);
+    });
+  });
+
   describe('POST /users', () => {
     it('should create a user', async () => {
       const user = {
@@ -33,7 +78,9 @@ describe('User', () => {
         email: 'johndoe@test.com',
         password: 'best password ever',
       });
-      expect(jose.SignJWT.prototype.sign).toHaveBeenCalledWith(config.appSecret);
+      expect(jose.SignJWT.prototype.sign).toHaveBeenCalledWith(
+        config.appSecret,
+      );
       expect(response.body).toEqual({
         id: user.id,
         name: user.name,
