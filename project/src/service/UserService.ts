@@ -3,7 +3,11 @@ import prisma from '../prisma';
 import { compare, encrypt } from '../utils/encryption';
 import config from '../config';
 
-export const createUser = async (name: string, email: string, password: string) => {
+export const createUser = async (
+  name: string,
+  email: string,
+  password: string,
+) => {
   const alreadyExists = await prisma.user.findUnique({
     where: {
       email,
@@ -61,18 +65,8 @@ export const loginUser = async (email: string, password: string) => {
   };
 };
 
-export const deleteUser = (id: string) => {
-  const userExists = prisma.user.findUnique({
-    where: {
-      id,
-    },
-  });
-  if (!userExists) {
-    throw new Error('User not found');
-  }
-  return prisma.user.delete({
-    where: {
-      id,
-    },
-  });
-};
+export const deleteUser = (id: string) => prisma.user.delete({
+  where: {
+    id,
+  },
+});
