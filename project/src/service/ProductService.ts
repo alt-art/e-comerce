@@ -61,6 +61,14 @@ export const updateProduct = async (id, data, user: User) => {
   if (user.role !== 'ADMIN') {
     throw new Error('You are not authorized to perform this action');
   }
+  const productExists = await prisma.product.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (!productExists) {
+    throw new Error('Product not found');
+  }
   const product = await prisma.product.update({
     where: {
       id,
