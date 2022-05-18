@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import request from 'supertest';
 import express, { Application } from 'express';
 import helmet from 'helmet';
@@ -6,6 +7,7 @@ import * as jose from 'jose';
 import prismaMock from './prismaMock';
 import router from '../router';
 import config from '../config';
+import cryptoAPI from '../utils/cryptoAPI';
 
 beforeEach(() => {
   mockReset(prismaMock);
@@ -40,9 +42,29 @@ describe('Product', () => {
           updatedAt: '2020-01-01T00:00:00.000Z',
         },
       ];
+      cryptoAPI.get = jest.fn().mockResolvedValue({
+        data: {
+          data: {
+            BTC: {
+              quote: { USD: { price: 10 } },
+            },
+            ETH: {
+              quote: { USD: { price: 20 } },
+            },
+          },
+        },
+      });
       prismaMock.product.findMany.mockResolvedValue(products);
       const response = await request(app).get('/product');
-      expect(response.body).toEqual(products);
+      expect(response.body).toEqual(
+        products.map((product) => ({
+          ...product,
+          crypto: {
+            BTC: product.price / 10,
+            ETH: product.price / 20,
+          },
+        })),
+      );
       expect(response.status).toBe(200);
     });
   });
@@ -57,9 +79,27 @@ describe('Product', () => {
         createdAt: '2020-01-01T00:00:00.000Z',
         updatedAt: '2020-01-01T00:00:00.000Z',
       };
+      cryptoAPI.get = jest.fn().mockResolvedValue({
+        data: {
+          data: {
+            BTC: {
+              quote: { USD: { price: 10 } },
+            },
+            ETH: {
+              quote: { USD: { price: 20 } },
+            },
+          },
+        },
+      });
       prismaMock.product.findUnique.mockResolvedValue(product);
       const response = await request(app).get('/product/1');
-      expect(response.body).toEqual(product);
+      expect(response.body).toEqual({
+        ...product,
+        crypto: {
+          BTC: product.price / 10,
+          ETH: product.price / 20,
+        },
+      });
       expect(response.status).toBe(200);
     });
     it('should return 404 if the product is not found', async () => {

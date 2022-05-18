@@ -1,9 +1,20 @@
 import { User } from '@prisma/client';
 import prisma from '../prisma';
+import cryptoAPI from '../utils/cryptoAPI';
 
 export const getProducts = async () => {
   const products = await prisma.product.findMany();
-  return products;
+  const { data: axiosData } = await cryptoAPI.get(
+    '/quotes/latest?symbol=BTC,ETH',
+  );
+  const { data } = axiosData;
+  return products.map((product) => ({
+    ...product,
+    crypto: {
+      BTC: product.price / data.BTC.quote.USD.price,
+      ETH: product.price / data.ETH.quote.USD.price,
+    },
+  }));
 };
 
 export const getProductById = async (id) => {
@@ -15,7 +26,17 @@ export const getProductById = async (id) => {
   if (!product) {
     throw new Error('Product not found');
   }
-  return product;
+  const { data: axiosData } = await cryptoAPI.get(
+    '/quotes/latest?symbol=BTC,ETH',
+  );
+  const { data } = axiosData;
+  return {
+    ...product,
+    crypto: {
+      BTC: product.price / data.BTC.quote.USD.price,
+      ETH: product.price / data.ETH.quote.USD.price,
+    },
+  };
 };
 
 type Product = {
