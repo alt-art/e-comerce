@@ -7,6 +7,15 @@ const router = Router();
 
 router.get('/', ProductController.getProducts);
 router.get('/:id', ProductController.getProductById);
-router.post('/', UserMiddleware.authenticateUser, ProductController.createProduct);
+router.post(
+  '/',
+  UserMiddleware.authenticateUser,
+  ProductController.createProduct,
+);
+router.put(
+  '/:id',
+  UserMiddleware.authenticateUser,
+  ProductController.updateProduct,
+);
 
 export default router;

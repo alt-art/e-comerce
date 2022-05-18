@@ -24,13 +24,26 @@ type Product = {
   description: string;
   image: string;
   category: string;
-}
+};
 
 export const createProduct = async (data: Product, user: User) => {
   if (user.role !== 'ADMIN') {
     throw new Error('You are not authorized to perform this action');
   }
   const product = await prisma.product.create({
+    data,
+  });
+  return product;
+};
+
+export const updateProduct = async (id, data, user: User) => {
+  if (user.role !== 'ADMIN') {
+    throw new Error('You are not authorized to perform this action');
+  }
+  const product = await prisma.product.update({
+    where: {
+      id,
+    },
     data,
   });
   return product;

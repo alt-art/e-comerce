@@ -42,3 +42,27 @@ export const createProduct: RequestHandler = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+export const updateProduct: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { user } = res.locals;
+  const {
+    name, price, description, image, category,
+  } = req.body;
+  try {
+    const product = await ProductService.updateProduct(
+      id,
+      {
+        name,
+        price,
+        category,
+        description,
+        image,
+      },
+      user,
+    );
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
