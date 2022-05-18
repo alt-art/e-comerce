@@ -33,9 +33,7 @@ describe('User', () => {
         email: 'johndoe@test.com',
         password: 'best password ever',
       });
-      expect(jose.SignJWT.prototype.sign).toHaveBeenCalledWith({
-        userId: user.id,
-      }, config.appSecret);
+      expect(jose.SignJWT.prototype.sign).toHaveBeenCalledWith(config.appSecret);
       expect(response.body).toEqual({
         id: user.id,
         name: user.name,
@@ -64,6 +62,23 @@ describe('User', () => {
       });
       expect(response.body).toEqual({
         error: 'This is a top-10 common password',
+      });
+      expect(response.status).toBe(400);
+    });
+    it('should return 400 if the email already exists', async () => {
+      const user = {
+        id: 'dummy-id',
+        name: 'John Doe',
+        email: 'johndoe@test.com',
+      };
+      prismaMock.user.findOne.mockResolvedValue(user);
+      const response = await request(app).post('/user').send({
+        name: user.name,
+        email: user.email,
+        password: 'best password ever',
+      });
+      expect(response.body).toEqual({
+        error: 'User already exists',
       });
       expect(response.status).toBe(400);
     });
