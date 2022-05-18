@@ -28,3 +28,11 @@ export const schemaUserLogin = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().required(),
 });
+
+export const schemaProduct = yup.object().shape({
+  name: yup.string().min(3).required(),
+  price: yup.number().positive().required(),
+  category: yup.string().required(),
+  description: yup.string().min(3).required(),
+  image: yup.string().url().required(),
+});
