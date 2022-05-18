@@ -1,3 +1,3 @@
-# Instruções do projeto
+# e-commerce
 
-*Coloque uma pequena justificativa sobre a escolha desse tema*
+The idea is to create a simple e-commerce API that can support cryptocurrency payments.
