@@ -1,6 +1,6 @@
 import { SignJWT } from 'jose';
 import prisma from '../prisma';
-import { encrypt } from '../utils/encryption';
+import { compare, encrypt } from '../utils/encryption';
 import config from '../config';
 
 export const createUser = async (name: string, email: string, password: string) => {
@@ -32,6 +32,31 @@ export const createUser = async (name: string, email: string, password: string) 
     .sign(config.appSecret);
   return {
     ...user,
+    token,
+  };
+};
+
+export const loginUser = async (email: string, password: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  if (!(await compare(password, user.password))) {
+    throw new Error('Invalid password');
+  }
+  const token = await new SignJWT({
+    userId: user.id,
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .sign(config.appSecret);
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
     token,
   };
 };
