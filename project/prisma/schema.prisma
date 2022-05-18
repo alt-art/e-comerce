@@ -24,6 +24,7 @@ model Product {
   id          String         @id @default(cuid())
   name        String
   description String         @db.Text
+  image       String
   price       Float
   cart        OrderProduct[]
   createdAt   DateTime       @default(now())

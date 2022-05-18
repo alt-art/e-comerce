@@ -24,6 +24,7 @@ type Product = {
     data: {
       name: product.title,
       description: product.description,
+      image: product.image,
       price: product.price,
     },
   }));
