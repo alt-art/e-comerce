@@ -36,3 +36,10 @@ export const schemaProduct = yup.object().shape({
   description: yup.string().min(3).required(),
   image: yup.string().url().required(),
 });
+
+export const schemaOrder = yup.array().of(
+  yup.object().shape({
+    id: yup.string().required(),
+    quantity: yup.number().positive().required(),
+  }),
+);
