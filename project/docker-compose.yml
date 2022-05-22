@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+  server:
+    build: .
+    command: sh -c './wait-for -t 3000 db:3306 -- yarn deploy'
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      COINMARKETCAP_API_KEY: ${COINMARKETCAP_API_KEY}
+      DATABASE_URL: mysql://root:admin@db:3306/shop

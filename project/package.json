@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "start": "node dist/src/index.js",
+    "deploy": "yarn prisma migrate deploy && yarn start",
     "build": "tsc --build",
     "test": "jest"
   },
