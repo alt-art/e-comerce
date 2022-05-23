@@ -31,7 +31,7 @@ You can find the documentation of the API [here](https://documenter.getpostman.c
 
 ## Requirements
 
-You need to have coinmarketcap API Token to use the API, you can get it [here](https://pro.coinmarketcap.com/signup/) or use the one provided in the `.env.example`.
+You need to have coinmarketcap API Token to use the API, you can get it [here](https://pro.coinmarketcap.com/signup/) or use the one mocked provided in the `.env.example`.
 
 MySQL database is required to store the data.
 You can make a docker image with the following command:
